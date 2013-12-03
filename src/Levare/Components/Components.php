@@ -184,11 +184,10 @@ class Components {
 		{
 			foreach($json['global'] as $glob)
 			{
-				$directories[] = str_finish($component, '/').$glob;
+				$directories[] = str_finish($component['path'], '/').$glob;
 			}
+			ClassLoader::addDirectories($directories);
 		}
-
-		ClassLoader::addDirectories($directories);
 	}
 
 	/**
