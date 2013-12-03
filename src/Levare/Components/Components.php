@@ -84,9 +84,11 @@ class Components {
 				$path = str_finish(base_path(), '/').$location.$folderName;
 			}
 			
-			$this->app['files']->makeDirectory($path);
-
-			header('LOCATION: /');
+			if(php_sapi_name() !== 'cli')
+			{
+				$this->app['files']->makeDirectory($path);
+				header('LOCATION: /');
+			}
 			exit();
 		}
 		else
