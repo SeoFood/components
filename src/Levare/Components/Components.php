@@ -108,7 +108,7 @@ class Components {
 		$composer = json_decode($this->jsonFileWorker->getComposerFile(), true);
 
 		// Write to composer.json if key and value not exists
-		if(!array_key_exists($folderName, array_get($composer, 'autoload.psr-0')) || !in_array($location, array_get($composer, 'autoload.psr-0')))
+		if(!array_key_exists($folderName, array_get($composer, 'autoload.psr-0', array())) || !in_array($location, array_get($composer, 'autoload.psr-0')))
 		{
 			if(!array_get($composer, 'autoload.psr-0.'.$folderName, false))
 			{
