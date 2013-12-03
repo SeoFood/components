@@ -34,15 +34,61 @@ class ComponentsServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+		
+		$this->registerJsonFileWorker();
+		$this->registerWorker();
+		$this->registerComponent();
+
+		$this->registerCommandCreate();
+
+	}
+
+	/**
+	 * Register the components.jsonfileworker class
+	 * @return JsonFileWorker
+	 */
+	private function registerJsonFileWorker()
+	{
 		$this->app['components.jsonfileworker'] = $this->app->share(function($app)
 		{
 			return new JsonFileWorker($app);
 		});
+	}
 
+	/**
+	 * Register the component class
+	 * @return Components
+	 */
+	private function registerComponent()
+	{
 		$this->app['components'] = $this->app->share(function($app)
 		{
 			return new Components($app);
 		});
+	}
+
+	/**
+	 * Register Worker Class
+	 * @return Worker
+	 */
+	private function registerWorker()
+	{
+		$this->app['components.worker'] = $this->app->share(function($app)
+		{
+			return new Worker($app);
+		});
+	}
+
+	/**
+	 * Register Component Create Command
+	 */
+	private function registerCommandCreate()
+	{
+		$this->app['command.component.create'] = $this->app->share(function($app)
+		{
+			return new Commands\CreateComponentCommand($app);
+		});
+		$this->commands('command.component.create');
 	}
 
 	/**

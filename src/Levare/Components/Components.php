@@ -6,7 +6,7 @@
  * @package Levare\Components;
  * @author Florian Uhlrich <f.uhlrich@levare-cms.de>
  * @copyright Copyright (c) 2013 by Levare Project Team
- * @version 1.0
+ * @version 1.0alpha
  * @access public
  */
 
@@ -23,7 +23,17 @@ class Components {
 	 */
 	public $files;
 
+	/**
+	 * Contains Components/JsonFileWorker Class
+	 * @var Levare\Components\JsonFileWorker
+	 */
 	private $jsonFileWorker;
+
+	/**
+	 * Contains Component Path
+	 * @var string
+	 */
+	private $path;
 
 	/**
 	 * Contains all Components
@@ -87,6 +97,15 @@ class Components {
 	}
 
 	/**
+	 * Display all Components as Array
+	 * @return array
+	 */
+	public function all()
+	{
+		return $this->components;
+	}
+
+	/**
 	 * Check if components Path exists
 	 * @return boolean
 	 */
@@ -122,6 +141,8 @@ class Components {
 			$this->jsonFileWorker->setComposerFile($composer);
 		}
 
+		$this->path = $path;
+
 		// Check if components path is writable
 		return is_writable($path);
 	}
@@ -136,12 +157,22 @@ class Components {
 	}
 
 	/**
-	 * Parse a component
-	 * @return void
+	 * Get the Component Path
+	 * @return string
 	 */
-	private function parse($component)
+	public function getPath($component = false)
 	{
-		return $component;
+		$path = str_finish($this->path, '/');
+
+		if($component)
+		{
+			if(array_key_exists(ucfirst($component), $this->components))
+			{
+				$path .= $component;
+			}
+		}
+
+		return $path;
 	}
 
 	/**
@@ -153,8 +184,8 @@ class Components {
 	public function loadRequiredFiles($component)
 	{
 		// Laden aller als required definierten Dateien
-		$config = $this->app['config']->get('components::autoload_files');
-		$compAutoload = $this->jsonFileWorker->getSettingsFile($component['path'], 'autoload_files', array());
+		$config = $this->app['config']->get('components::file_autoload');
+		$compAutoload = $this->jsonFileWorker->getSettingsFile($component['path'], 'file_autoload', array());
 
 		$autoload = array_merge($compAutoload, $config);
 		$autoload = array_unique($autoload);
@@ -180,9 +211,9 @@ class Components {
 		$json = $this->jsonFileWorker->getSettingsFile($component['path']);
 		$directories = array();
 
-		if(array_key_exists('global', $json))
+		if(array_key_exists('global_namespace', $json))
 		{
-			foreach($json['global'] as $glob)
+			foreach($json['global_namespace'] as $glob)
 			{
 				$directories[] = str_finish($component['path'], '/').$glob;
 			}
@@ -200,9 +231,9 @@ class Components {
 		$json = $this->jsonFileWorker->getSettingsFile($component['path']);
 		$path = str_finish($component['path'], '/');
 		
-		if(array_key_exists('folders', $json))
+		if(array_key_exists('register_folders', $json))
 		{
-			if(in_array('views', $json['folders']))
+			if(in_array('views', $json['register_folders']))
 			{
 				if($this->app['files']->isWritable($viewPath = $path.'views'))
 				{
@@ -211,7 +242,7 @@ class Components {
 
 			}
 
-			if(in_array('lang', $json['folders']))
+			if(in_array('lang', $json['register_folders']))
 			{
 				if($this->app['files']->isWritable($langPath = $path.'lang'))
 				{
@@ -219,7 +250,7 @@ class Components {
 				}
 			}
 
-			if(in_array('config', $json['folders']))
+			if(in_array('config', $json['register_folders']))
 			{
 				if($this->app['files']->isWritable($configPath = $path.'config'))
 				{
@@ -259,18 +290,15 @@ class Components {
 				'slug' => $json['slug']
 			);
 
-			if(!is_null($json) && array_key_exists('enabled', $json))
+			if(!is_null($json))
 			{
-				array_set($this->components[$componentName], 'enabled', true);
+				$status = (array_key_exists('enabled', $json)) ? $json['enabled'] : false;
+
+				array_set($this->components[$componentName], 'enabled', $status);
 				$this->loadRequiredFiles($this->components[$componentName]);
 				$this->registerFolders($this->components[$componentName]);
 				$this->registerGlobalNamespace($this->components[$componentName]);		
 			}
-			else
-			{
-				array_set($this->components[$componentName], 'enabled', false);	
-			}
-
 		}
 	}
 

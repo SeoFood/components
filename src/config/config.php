@@ -5,7 +5,7 @@ return array(
 	'location' => './',
 	'folderName' => 'components',
 
-	'autoload_files' => array(
+	'file_autoload' => array(
 		'routes.php',
 		'filters.php'
 	)

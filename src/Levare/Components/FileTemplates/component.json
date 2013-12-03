@@ -1,0 +1,13 @@
+{
+	"name"				: "{{name}}",
+	"slug"				: "{{slug}}",
+	"author"			: "{{author}}",
+	"email"				: "{{email}}",
+	"license"			: "",
+	"description"		: "",
+	"version"			: "",
+	"file_autoload"		: [],
+	"global_namespace"	: [],
+	"register_folders"	: [],
+	"enabled"			: true
+}
