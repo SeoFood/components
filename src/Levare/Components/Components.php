@@ -54,7 +54,10 @@ class Components {
 
 		if(!$this->checkPath())
 		{
-			$this->createFolder();
+			if(php_sapi_name() != 'cli')
+			{
+				$this->createFolder();
+			}
 			return false;
 		}
 
@@ -70,6 +73,7 @@ class Components {
 	{
 		$method = $this->app['request']->server('REQUEST_METHOD');
 
+
 		if($method == 'POST')
 		{
 			$location = $this->app['config']->get('components::location');
@@ -83,12 +87,9 @@ class Components {
 			{
 				$path = str_finish(base_path(), '/').$location.$folderName;
 			}
-			
-			if(php_sapi_name() !== 'cli')
-			{
-				$this->app['files']->makeDirectory($path);
-				header('LOCATION: /');
-			}
+
+			$this->app['files']->makeDirectory($path);
+			header('LOCATION: /');
 			exit();
 		}
 		else
