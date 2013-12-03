@@ -1,0 +1,21 @@
+{
+    "name": "levare/components",
+    "description": "",
+    "authors": [
+        {
+            "name": "Florian Uhlrich",
+            "email": "f.uhlrich@levare-cms.de"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.1.*"
+    },
+    "autoload": {
+        "classmap": [],
+        "psr-0": {
+            "Levare\\Components\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
