@@ -1,6 +1,7 @@
 {
     "name": "levare/components",
-    "description": "",
+    "description": "A Component Manager for Levare CMS - based on ModuleManager",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Florian Uhlrich",
