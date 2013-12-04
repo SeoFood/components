@@ -8,6 +8,10 @@
 	"version"			: "",
 	"file_autoload"		: [],
 	"global_namespace"	: [],
-	"register_folders"	: [],
+	"register_folders"	: [
+		"views",
+		"config",
+		"lang"
+	],
 	"enabled"			: true
 }
