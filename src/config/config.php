@@ -19,5 +19,16 @@ return array(
 	'file_autoload' => array(
 		'routes.php',
 		'filters.php'
+	),
+
+	/**
+	 * File would be created with artisan command
+	 */
+	'artisan_create_folders' => array(
+		'Controllers', // ucfirst for namespace on osx, linux and windows
+		'Models', // ucfirst for namespace on osx, linux and windows
+		'views',
+		'lang',
+		'config'
 	)
 );

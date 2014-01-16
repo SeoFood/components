@@ -49,14 +49,14 @@ class Worker {
 	 */
 	private function createFolder($name)
 	{
-		$root = str_finish($this->path.$name, '/');
+		$root = ucfirst(str_finish($this->path.$name, '/'));
 
 		$this->app['files']->makeDirectory($root, 0755);
-		$this->app['files']->makeDirectory($root.'controllers', 0755);
-		$this->app['files']->makeDirectory($root.'views', 0755);
-		$this->app['files']->makeDirectory($root.'lang', 0755);
-		$this->app['files']->makeDirectory($root.'config', 0755);
-		$this->app['files']->makeDirectory($root.'models', 0755);
+
+		foreach($this->app['config']->get('components::artisan_create_folders') as $folder)
+		{
+			$this->app['files']->makeDirectory($root.$folder, 0755);
+		}
 	}
 
 	/**

@@ -77,7 +77,7 @@ class Components {
 		if($method == 'POST')
 		{
 			$location = $this->app['config']->get('components::location');
-			$folderName = $this->app['config']->get('components::folderName');
+			$folderName = ucfirst($this->app['config']->get('components::folderName'));
 
 			if(str_contains($location, './'))
 			{
@@ -130,15 +130,17 @@ class Components {
 		$composer = json_decode($this->jsonFileWorker->getComposerFile(), true);
 
 		// Write to composer.json if key and value not exists
-		if(!array_key_exists($folderName, array_get($composer, 'autoload.psr-0', array())) || !in_array($location, array_get($composer, 'autoload.psr-0')))
+		// dd(!in_array($location, array_get($composer, 'autoload.psr-0')));
+
+		if(!array_key_exists(ucfirst($folderName), array_get($composer, 'autoload.psr-0', array())) || !in_array($location, array_get($composer, 'autoload.psr-0')))
 		{
-			if(!array_get($composer, 'autoload.psr-0.'.$folderName, false))
+			if(!array_get($composer, 'autoload.psr-0.'.ucfirst($folderName), false))
 			{
 				array_set($composer, 'autoload.psr-0', array(ucfirst($folderName) => $location));
 			}
 			else
 			{
-				array_set($composer, 'autoload.psr-0.'.$folderName, $location);
+				array_set($composer, 'autoload.psr-0.'.ucfirst($folderName), $location);
 			}
 
 			$this->jsonFileWorker->setComposerFile($composer);
@@ -286,21 +288,28 @@ class Components {
 		{
 			$json = $this->jsonFileWorker->getSettingsFile($comp);
 			$componentName = last(explode('/', str_replace('\\', '/', $comp)));
-			
-			$this->components[$componentName] = array(
-				'path' => $comp,
-				'name' => $componentName,
-				'slug' => $json['slug']
-			);
 
 			if(!is_null($json))
 			{
+				// Write component to array
+				$this->components[$componentName] = array(
+					'path' => $comp,
+					'name' => $componentName,
+					'slug' => $json['slug']
+				);
+
 				$status = (array_key_exists('enabled', $json)) ? $json['enabled'] : false;
 
+				// Set component status
 				array_set($this->components[$componentName], 'enabled', $status);
-				$this->loadRequiredFiles($this->components[$componentName]);
-				$this->registerFolders($this->components[$componentName]);
-				$this->registerGlobalNamespace($this->components[$componentName]);		
+
+				// If component is active, then register namespaces
+				if($this->isActive($componentName))
+				{
+					$this->loadRequiredFiles($this->components[$componentName]);
+					$this->registerFolders($this->components[$componentName]);
+					$this->registerGlobalNamespace($this->components[$componentName]);	
+				}	
 			}
 		}
 	}
