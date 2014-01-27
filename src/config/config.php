@@ -11,7 +11,7 @@ return array(
 	/**
 	 * The component folder name
 	 */
-	'folderName' => 'components',
+	'folderName' => 'Components',
 
 	/**
 	 * Here you can define files, that autoload in each Module

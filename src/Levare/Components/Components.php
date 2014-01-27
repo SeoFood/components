@@ -62,7 +62,6 @@ class Components {
 		}
 
 		$this->registerComponents();
-		
 	}
 
 	/**
@@ -280,38 +279,58 @@ class Components {
 	 *
 	 * @return void
 	 */
-	private function registerComponents()
+	private function registerComponents($components = null, $mainCompName = null)
 	{
-		$components = $this->findAllComponents();
+		$components = (!is_null($components)) ? $components : $this->findAllComponents();
 
-		foreach($components as $comp)
+		foreach($components as $compPath)
 		{
-			$json = $this->jsonFileWorker->getSettingsFile($comp);
-			$componentName = last(explode('/', str_replace('\\', '/', $comp)));
+			$json = $this->jsonFileWorker->getSettingsFile($compPath);
+			$compName = last(explode('/', str_replace('\\', '/', $compPath)));
+
+			if(!is_null($mainCompName))
+			{
+				$compName = $mainCompName . '_' . $compName;
+			}
 
 			if(!is_null($json))
 			{
 				// Write component to array
-				$this->components[$componentName] = array(
-					'path' => $comp,
-					'name' => $componentName,
+				$this->components[$compName] = array(
+					'path' => $compPath,
+					'name' => $compName,
 					'slug' => $json['slug']
 				);
 
 				$status = (array_key_exists('enabled', $json)) ? $json['enabled'] : false;
 
 				// Set component status
-				array_set($this->components[$componentName], 'enabled', $status);
+				array_set($this->components[$compName], 'enabled', $status);
 
 				// If component is active, then register namespaces
-				if($this->isActive($componentName))
+				if($this->isActive($compName))
 				{
-					$this->loadRequiredFiles($this->components[$componentName]);
-					$this->registerFolders($this->components[$componentName]);
-					$this->registerGlobalNamespace($this->components[$componentName]);	
-				}	
+					$this->loadRequiredFiles($this->components[$compName]);
+					$this->registerFolders($this->components[$compName]);
+					$this->registerGlobalNamespace($this->components[$compName]);	
+				}
+
+				// Sub Components Register
+				$subComponentsJson = (array_key_exists('sub_modules', $json)) ? $json['sub_modules'] : false;
+
+				foreach($subComponentsJson as $sc)
+				{
+					$path = str_finish($compPath, '/').$sc;
+					$this->registerSubComponents(array($path), $compName);
+				}
 			}
 		}
+
+	}
+
+	private function registerSubComponents($components, $mainCompName)
+	{
+		$this->registerComponents($components, $mainCompName);
 	}
 
 	/**

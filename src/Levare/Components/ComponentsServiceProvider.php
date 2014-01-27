@@ -40,6 +40,7 @@ class ComponentsServiceProvider extends ServiceProvider {
 		$this->registerComponent();
 
 		$this->registerCommandCreate();
+		$this->registerCommandDelete();
 
 	}
 
@@ -89,6 +90,18 @@ class ComponentsServiceProvider extends ServiceProvider {
 			return new Commands\CreateComponentCommand($app);
 		});
 		$this->commands('command.component.create');
+	}
+
+	/**
+	 * Register Component Delete Command
+	 */
+	private function registerCommandDelete()
+	{
+		$this->app['command.component.delete'] = $this->app->share(function($app)
+		{
+			return new Commands\DeleteComponentCommand($app);
+		});
+		$this->commands('command.component.delete');
 	}
 
 	/**

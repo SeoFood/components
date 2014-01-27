@@ -13,5 +13,6 @@
 		"config",
 		"lang"
 	],
+	"sub_modules" 		: [],
 	"enabled"			: true
 }
