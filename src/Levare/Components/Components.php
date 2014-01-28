@@ -316,7 +316,7 @@ class Components {
 				}
 
 				// Sub Components Register
-				$subComponentsJson = (array_key_exists('sub_modules', $json)) ? $json['sub_modules'] : false;
+				$subComponentsJson = (array_key_exists('sub_modules', $json)) ? $json['sub_modules'] : array();
 
 				foreach($subComponentsJson as $sc)
 				{
