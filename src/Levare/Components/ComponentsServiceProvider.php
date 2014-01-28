@@ -41,6 +41,8 @@ class ComponentsServiceProvider extends ServiceProvider {
 
 		$this->registerCommandCreate();
 		$this->registerCommandDelete();
+		// $this->registerCommandArchive();
+		$this->registerCommandList();
 
 	}
 
@@ -102,6 +104,30 @@ class ComponentsServiceProvider extends ServiceProvider {
 			return new Commands\DeleteComponentCommand($app);
 		});
 		$this->commands('command.component.delete');
+	}
+
+	/**
+	 * Register Component Archive Command
+	 */
+	private function registerCommandArchive()
+	{
+		$this->app['command.component.archive'] = $this->app->share(function($app)
+		{
+			return new Commands\ArchiveComponentCommand($app);
+		});
+		$this->commands('command.component.archive');
+	}
+
+	/**
+	 * Register Component List Command
+	 */
+	private function registerCommandList()
+	{
+		$this->app['command.component.list'] = $this->app->share(function($app)
+		{
+			return new Commands\ListComponentCommand($app);
+		});
+		$this->commands('command.component.list');
 	}
 
 	/**
