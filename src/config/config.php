@@ -6,7 +6,7 @@ return array(
 	/**
 	 * The Location where your Components are present, without Component Folder Name
 	 */
-	'location' => '/',
+	'location' => 'Modules',
 
 	/**
 	 * Setup your loading

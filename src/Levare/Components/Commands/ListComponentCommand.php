@@ -64,7 +64,7 @@ class ListComponentCommand extends Command {
 				'name' => $comp['name'],
 				'slug' => $comp['slug'],
 				'path' => $comp['path'],
-				'namespace' => $this->app['config']->get('components::folderName').'\\'.str_replace('_', '\\', $comp['name']),
+				'namespace' => $this->app['config']->get('components::name').'\\'.str_replace('_', '\\', $comp['name']),
 				'status' => ($this->main->isActive($comp['name'])) ? 'enabled' : 'disabled'
 			);
 		}

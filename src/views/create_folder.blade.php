@@ -70,7 +70,6 @@
 	
 	{{Form::open()}}
 	<p>
-		Foldername: {{$foldername}} <br>
 		Path: {{$location}}
 	</p>
 	<p>

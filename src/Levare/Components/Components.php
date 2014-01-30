@@ -14,6 +14,8 @@ use Illuminate\Foundation\Application;
 use Levare\Components\JsonFileWorker;
 use Illuminate\Support\ClassLoader;
 
+use Levare\Components\Exceptions\ComponentsException;
+
 class Components {
 
 	/**
@@ -75,10 +77,7 @@ class Components {
 
 		if($method == 'POST')
 		{
-			$location = $this->app['config']->get('components::location');
-			$folderName = ucfirst($this->app['config']->get('components::name'));
-
-			$path = $this->cleanPath($location, $folderName);
+			$path = $this->cleanPath($this->app['config']);
 
 			$this->app['files']->makeDirectory($path);
 			header('LOCATION: /');
@@ -88,7 +87,7 @@ class Components {
 		{
 			// Display view to create the components folder
 			$foldername = $this->app['config']->get('components::name');
-			$location = $this->cleanPath($this->app['config']->get('components::location'), $foldername);
+			$location = $this->cleanPath($this->app['config']);
 			echo $this->app['view']->make('components::create_folder', compact('foldername', 'location'));
 		}
 	}
@@ -105,15 +104,34 @@ class Components {
 	/**
 	 * Setup clean Path
 	 */
-	private function cleanPath($location, $name)
+	private function cleanPath($config)
 	{
-		if(starts_with($location, './') || starts_with($location, '/'))
+		$location = $config->get('components::location');
+		$name = $config->get('components::name');
+		$type = $config->get('components::type');
+
+		if($type == 'namespace')
 		{
-			$path = str_finish(base_path(), '/').$name;
+			if(starts_with($location, './') || starts_with($location, '/'))
+			{
+				throw new ComponentsException('PSR-4 Loader needs relative path from your root directory e.g app/folder');
+			}
+			else
+			{
+				$path = str_finish(base_path(), '/').str_finish($location, '/');
+			}
 		}
 		else
 		{
-			$path = str_finish(base_path(), '/').str_finish($location, '/').$name;
+			$location = ($name == $location) ? './' : $location;
+			if(starts_with($location, './') || starts_with($location, '/'))
+			{
+				$path = str_finish(base_path(), '/').$name;
+			}
+			else
+			{
+				$path = str_finish(base_path(), '/').str_finish($location, '/').$name;
+			}
 		}
 
 		return $path;
@@ -135,7 +153,7 @@ class Components {
 		// Setup Name
 		$name = ucfirst($name);
 
-		$path = $this->cleanPath($location, $name);
+		$path = $this->cleanPath($config);
 
 		// Check Path is writeable
 		$writeablePath = is_writable($path);		
@@ -150,6 +168,11 @@ class Components {
 
 		if(!array_key_exists($name, array_get($composer, 'autoload.'.$psr, array())) || !in_array($location, array_get($composer, 'autoload.'.$psr)))
 		{
+
+			if($psr == 'psr-0')
+			{
+				$location = ($name == $location) ? './' : $location;
+			}
 
 			$newName = ($psr == 'psr-4') ? $name.'\\' : $name;
 
@@ -229,7 +252,6 @@ class Components {
 
 		$autoload = array_merge($compAutoload, $config);
 		$autoload = array_unique($autoload);
-		var_dump($autoload);
 
 		foreach($autoload as $file)
 		{
