@@ -6,12 +6,19 @@ return array(
 	/**
 	 * The Location where your Components are present, without Component Folder Name
 	 */
-	'location' => './',
+	'location' => '/',
 
 	/**
-	 * The component folder name
+	 * Setup your loading
+	 *
+	 * namespace, folder
 	 */
-	'folderName' => 'Components',
+	'type' => 'folder',
+
+	/**
+	 * The component folder or Namespace name
+	 */
+	'name' => 'Modules',
 
 	/**
 	 * Here you can define files, that autoload in each Module

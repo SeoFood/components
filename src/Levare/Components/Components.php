@@ -76,16 +76,9 @@ class Components {
 		if($method == 'POST')
 		{
 			$location = $this->app['config']->get('components::location');
-			$folderName = ucfirst($this->app['config']->get('components::folderName'));
+			$folderName = ucfirst($this->app['config']->get('components::name'));
 
-			if(str_contains($location, './'))
-			{
-				$path = str_finish(base_path(), '/').$folderName;
-			}
-			else
-			{
-				$path = str_finish(base_path(), '/').$location.$folderName;
-			}
+			$path = $this->cleanPath($location, $folderName);
 
 			$this->app['files']->makeDirectory($path);
 			header('LOCATION: /');
@@ -94,7 +87,9 @@ class Components {
 		else
 		{
 			// Display view to create the components folder
-			echo $this->app['view']->make('components::create_folder');
+			$foldername = $this->app['config']->get('components::name');
+			$location = $this->cleanPath($this->app['config']->get('components::location'), $foldername);
+			echo $this->app['view']->make('components::create_folder', compact('foldername', 'location'));
 		}
 	}
 
@@ -108,22 +103,42 @@ class Components {
 	}
 
 	/**
+	 * Setup clean Path
+	 */
+	private function cleanPath($location, $name)
+	{
+		if(starts_with($location, './') || starts_with($location, '/'))
+		{
+			$path = str_finish(base_path(), '/').$name;
+		}
+		else
+		{
+			$path = str_finish(base_path(), '/').str_finish($location, '/').$name;
+		}
+
+		return $path;
+	}
+
+	/**
 	 * Check if components Path exists
 	 * @return boolean
 	 */
 	public function checkPath()
 	{
-		$location = $this->app['config']->get('components::location');
-		$folderName = $this->app['config']->get('components::folderName');
+		$config = $this->app['config'];
 
-		if(str_contains($location, './'))
-		{
-			$path = str_finish(base_path(), '/').$folderName;
-		}
-		else
-		{
-			$path = str_finish(base_path(), '/').$location.$folderName;
-		}		
+		// get config vars
+		$location = $config->get('components::location');
+		$type = $config->get('components::type');
+		$name = $config->get('components::name');;
+
+		// Setup Name
+		$name = ucfirst($name);
+
+		$path = $this->cleanPath($location, $name);
+
+		// Check Path is writeable
+		$writeablePath = is_writable($path);		
 
 		// Get Composer File
 		$composer = json_decode($this->jsonFileWorker->getComposerFile(), true);
@@ -131,24 +146,45 @@ class Components {
 		// Write to composer.json if key and value not exists
 		// dd(!in_array($location, array_get($composer, 'autoload.psr-0')));
 
-		if(!array_key_exists(ucfirst($folderName), array_get($composer, 'autoload.psr-0', array())) || !in_array($location, array_get($composer, 'autoload.psr-0')))
+		$psr = ($type == 'namespace') ? 'psr-4' : 'psr-0';
+
+		if(!array_key_exists($name, array_get($composer, 'autoload.'.$psr, array())) || !in_array($location, array_get($composer, 'autoload.'.$psr)))
 		{
-			if(!array_get($composer, 'autoload.psr-0.'.ucfirst($folderName), false))
+
+			$newName = ($psr == 'psr-4') ? $name.'\\' : $name;
+
+			if(!array_get($composer, 'autoload.'.$psr.'.'.$newName, false))
 			{
-				array_set($composer, 'autoload.psr-0', array(ucfirst($folderName) => $location));
+				array_set($composer, 'autoload.'.$psr, array_merge(array_get($composer, 'autoload.'.$psr, array()), array($newName => $location)));
 			}
 			else
 			{
-				array_set($composer, 'autoload.psr-0.'.ucfirst($folderName), $location);
+				array_set($composer, 'autoload.'.$psr.'.'.$newName, $location);
 			}
 
-			$this->jsonFileWorker->setComposerFile($composer);
-		}
+			// Forget PSR-4 Components entry
+			$unsetPsr = ($psr == 'psr-4') ? 'psr-0' : 'psr-4';
+			$nameForget = ($unsetPsr == 'psr-4') ? $name.'\\' : $name;
 
+			array_forget($composer, 'autoload.'.$unsetPsr.'.'.$nameForget);
+
+			if(array_key_exists($unsetPsr, array_get($composer, 'autoload', array())) && empty(array_get($composer, 'autoload.'.$unsetPsr)))
+			{
+				array_forget($composer, 'autoload.'.$unsetPsr);
+			}
+
+			// Write new composer.json
+			if($writeablePath)
+			{
+				$this->jsonFileWorker->setComposerFile($composer);
+			}
+		}
+		
+		// Setup Path
 		$this->path = $path;
 
 		// Check if components path is writable
-		return is_writable($path);
+		return $writeablePath;
 	}
 
 	/**
@@ -193,7 +229,8 @@ class Components {
 
 		$autoload = array_merge($compAutoload, $config);
 		$autoload = array_unique($autoload);
-		
+		var_dump($autoload);
+
 		foreach($autoload as $file)
 		{
 			if($this->app['files']->isWritable(str_finish($component['path'], '/').$file))
@@ -201,6 +238,8 @@ class Components {
 				require_once str_finish($component['path'], '/').$file;
 			}
 		}
+
+
 		
 	}
 

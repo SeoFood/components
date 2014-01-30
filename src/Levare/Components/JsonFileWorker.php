@@ -14,9 +14,9 @@ class JsonFileWorker {
 	/**
 	 * Check composer.json has autoload parameter
 	 */
-	public function getComposerFile()
+	public function getComposerFile($path = false)
 	{
-		return parse_json_file('composer.json');		
+		return parse_json_file('composer.json', $path);		
 	}
 
 	/**
@@ -28,7 +28,7 @@ class JsonFileWorker {
 		
 		if($this->app['files']->isWritable($path))
 		{
-			return $this->app['files']->put($path, format_json($data));
+			return $this->app['files']->put($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 		}
 		else
 		{
