@@ -191,7 +191,7 @@ class Components {
 
 			array_forget($composer, 'autoload.'.$unsetPsr.'.'.$nameForget);
 
-			if(array_key_exists($unsetPsr, array_get($composer, 'autoload', array())) && empty(array_get($composer, 'autoload.'.$unsetPsr)))
+			if(array_key_exists($unsetPsr, array_get($composer, 'autoload', array())) && empty(array_get($composer, 'autoload.'.$unsetPsr, array())))
 			{
 				array_forget($composer, 'autoload.'.$unsetPsr);
 			}
