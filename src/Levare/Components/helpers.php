@@ -33,12 +33,15 @@ function parse_json_file($path, $withPath = false)
 function component_path()
 {
     $path = str_finish(base_path(), '/');
-    if(!str_contains(Config::get('components::location'), './'))
+
+    if(!str_contains(Config::get('components::location'), './') && Config::get('components::location') === Config::get('components::name'))
     {
         $path .= Config::get('components::location');
     }
-
-    $path .= Config::get('components::name');
+    else
+    {
+        $path .= str_finish(Config::get('components::location'), '/').Config::get('components::name');
+    }
 
     return str_finish($path, '/');
 }
