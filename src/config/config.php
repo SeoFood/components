@@ -13,7 +13,7 @@ return array(
 	 *
 	 * namespace, folder
 	 */
-	'type' => 'folder',
+	'type' => 'namespace',
 
 	/**
 	 * The component folder or Namespace name

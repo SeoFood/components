@@ -38,7 +38,7 @@ function component_path()
         $path .= Config::get('components::location');
     }
 
-    $path .= Config::get('components::folderName');
+    $path .= Config::get('components::name');
 
     return str_finish($path, '/');
 }
