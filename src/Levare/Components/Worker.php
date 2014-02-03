@@ -129,7 +129,7 @@ class Worker {
 	{
 		$config = $this->app['components.jsonfileworker']->getSettingsFile($this->app['components']->components[$name]['path']);
 		array_set($config, 'sub_modules', array_merge(array_get($config, 'sub_modules'), array($moduleName)));
-		$this->app['files']->put($this->app['components']->components[$name]['path'].'/component.json', format_json($config));
+		$this->app['files']->put($this->app['components']->components[$name]['path'].'/component.json', json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 	}
 
 	/**
@@ -140,7 +140,12 @@ class Worker {
 		$splits = explode('_', $name);
 		$subname = last($splits);
 		$count = count($splits);
-		unset($splits[$count-1]);
+		
+		if($count > 1)
+		{
+			unset($splits[$count-1]);
+		}
+
 		$name = implode($splits, '_');
 		$config = $this->app['components.jsonfileworker']->getSettingsFile($this->app['components']->components[$name]['path']);
 		$submodule = $config['sub_modules'];
@@ -153,7 +158,7 @@ class Worker {
 			}
 		}
 
-		$this->app['files']->put($this->app['components']->components[$name]['path'].'/component.json', format_json($config));
+		$this->app['files']->put($this->app['components']->components[$name]['path'].'/component.json', json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 	}
 
 	/**

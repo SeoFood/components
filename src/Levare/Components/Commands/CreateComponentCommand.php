@@ -60,28 +60,28 @@ class CreateComponentCommand extends Command {
 	{
 		$this->line('Welcome to create a new component');
 		$modules = $this->main->components;
-		while(1) {
-			$name = ucfirst($this->ask('Name of component:'));
-
-			if(array_key_exists($name, $modules))
-			{
-				$this->error('An component with this name already exists, please choose another one');
-				continue;
-			}
-			else
-			{
-				$this->info('Name of Component valid. Go to next Step.');
-				break 1;
-			}
-		}
 		
+		$name = ucfirst($this->ask('Name of component:'));
 		$mainmodule = $this->confirm('Is Core Module? [default: yes]', true);
 
 		if($mainmodule)
 		{
-			$this->worker->beforeCreate($name);
+			while(1) {
+				if(array_key_exists($name, $modules))
+				{
+					$this->error('An component with this name already exists, please choose another one');
+					$name = ucfirst($this->ask('Name of component:'));
+					continue;
+				}
+				else
+				{
+					$this->info('Name of Component valid. Go to next Step.');
+					$this->worker->beforeCreate($name);
+					$this->createCommand();
+					break 1;
+				}
+			}
 
-			$this->createCommand();
 		}
 		else
 		{
