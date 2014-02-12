@@ -14,5 +14,6 @@
 		"lang"
 	],
 	"sub_modules" 		: [],
-	"enabled"			: true
+	"enabled"			: true,
+	"widgets": {}
 }
