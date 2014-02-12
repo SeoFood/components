@@ -430,7 +430,7 @@ class Components {
 
 			$controllerCall = $this->jsonFileWorker->getSettingsFile($this->getPath($widget[0]), 'widgets');
 
-			$controller = array_get($controllerCall, $controller);
+			$controller = array_get($controllerCall, $widget[1]);
 		}
 
 		$array = array(
