@@ -34,9 +34,9 @@ class ComponentsServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		
 		$this->registerJsonFileWorker();
 		$this->registerWorker();
+		$this->registerHmvcEngine();
 		$this->registerComponent();
 
 		$this->registerCommandCreate();
@@ -128,6 +128,24 @@ class ComponentsServiceProvider extends ServiceProvider {
 			return new Commands\ListComponentCommand($app);
 		});
 		$this->commands('command.component.list');
+	}
+
+	/**
+	 * Register HMVC Engine
+	 * @return [type] [description]
+	 */
+	private function registerHmvcEngine()
+	{
+		list($app, $view) = array($this->app, $this->app['view']);
+
+		$this->app['components.hmvc'] = $this->app->share(function($app)
+		{
+			return new HmvcEngine($app);
+		});
+
+		$view->addExtension('hmvc.php', 'hmvc.php', function() use ($app) {
+			return new HmvcEngine($app);
+		});
 	}
 
 	/**

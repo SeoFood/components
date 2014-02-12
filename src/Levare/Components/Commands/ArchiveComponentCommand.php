@@ -3,7 +3,7 @@
 /**
  * This Class creates an Artisan Command to create an Archiv from an component
  *
- * @todo Write Documentation
+ * @todo Write Documentation, write better method comments
  *
  * @package levare\components
  * @author Florian Uhlrich <f.uhlrich@levare-cms.de>

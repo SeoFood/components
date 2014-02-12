@@ -3,7 +3,7 @@
 /**
  * This Class handles all Component Workings
  *
- * @todo  Write Documentation
+ * @todo  Write Documentation, write better method comments
  *
  * @package levare\components
  * @author Florian Uhlrich <f.uhlrich@levare-cms.de>
@@ -17,24 +17,51 @@ use Illuminate\Foundation\Application;
 
 class Worker {
 
+	/**
+	 * Contains app Ioc container
+	 * @var Illuminate\Foundation\Application
+	 */
 	private $app;
+
+	/**
+	 * Contains rootpath
+	 * @var string
+	 */
 	private $rootPath;
+	
+	/**
+	 * Contains componentpath
+	 * @var string
+	 */
 	private $modPath;
+	
+	/**
+	 * Contains component name
+	 * @var string
+	 */
 	private $name;
 
-
+	/**
+	 * Create a new class instance
+	 * @param Application $app Contains the app Ioc Container
+	 */
 	public function __construct(Application $app)
 	{
+		// Make IOC Container available on class
 		$this->app = $app;
+
+		// Setup components root path
 		$this->rootPath = str_finish($this->app['components']->getPath(), '/');
 	}
 
 	/**
-	 * Setup Name and Path
+	 * Fire before components is create with artisan
+	 * @param  string  $name
+	 * @param  boolean $path
+	 * @return void
 	 */
 	public function beforeCreate($name, $path = false)
 	{
-		// $this->name = last(explode('_', $name));
 		$this->name = $name;
 		$path = ($path) ? str_finish($path, '/') : $this->rootPath;
 
@@ -47,7 +74,10 @@ class Worker {
 	}
 
 	/**
-	 * Setup Name and Path before delete
+	 * Fire before component is deleted with artisan
+	 * @param  string $name
+	 * @param  string $path
+	 * @return void
 	 */
 	public function beforeDelete($name, $path)
 	{
@@ -58,7 +88,7 @@ class Worker {
 	/**
 	 * Call the Create Command to create a new Componente from CLI
 	 *
-	 * @deprecated This function remove with next Update
+	 * @deprecated This function is remove with next Update
 	 * 
 	 * @param  string $name
 	 */
@@ -71,7 +101,8 @@ class Worker {
 	}
 
 	/**
-	 * Erstellt die Ordner
+	 * Creates the component folder
+	 * @return void
 	 */
 	public function createFolder()
 	{
@@ -79,7 +110,8 @@ class Worker {
 	}
 
 	/**
-	 * Erstellt die Unterordner
+	 * Creates all required subfolders of component
+	 * @return void
 	 */
 	public function createFolders()
 	{
@@ -90,7 +122,8 @@ class Worker {
 	}
 
 	/**
-	 * Erstellt die component.json
+	 * Creates the component.json file
+	 * @return void
 	 */
 	public function createSettingsFile()
 	{
@@ -115,7 +148,8 @@ class Worker {
 	}
 
 	/**
-	 * Erstellt die routes.php
+	 * Creates the route.php file
+	 * @return void
 	 */
 	public function createRoutesFile()
 	{
@@ -123,24 +157,33 @@ class Worker {
 	}
 
 	/**
-	 * Fügt ein Submodule zur composer.json 
+	 * Add a new submodule to mainmodule composer.json
+	 * @param string $name Name of Submodule
+	 * @param string $moduleName Name of MainModule
 	 */
 	public function addSubmodule($name, $moduleName)
 	{
-		$config = $this->app['components.jsonfileworker']->getSettingsFile($this->app['components']->components[$name]['path']);
+		$config = $this->app['components.jsonfileworker']
+						->getSettingsFile($this->app['components']
+						->components[$name]['path']);
+
 		array_set($config, 'sub_modules', array_merge(array_get($config, 'sub_modules'), array($moduleName)));
-		$this->app['files']->put($this->app['components']->components[$name]['path'].'/component.json', json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+		$this->app['files']
+			->put($this->app['components']->components[$name]['path'].'/component.json', json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 	}
 
 	/**
-	 * Löscht ein Submodule aus der component.json des Hauptmodules
+	 * Delete a submodule from mainmodule component.json file
+	 * @param  string $name
+	 * @return void
 	 */
 	public function removeSubmodule($name)
 	{
 		$splits = explode('_', $name);
 		$subname = last($splits);
 		$count = count($splits);
-		
+
 		if($count > 1)
 		{
 			unset($splits[$count-1]);
@@ -162,11 +205,15 @@ class Worker {
 	}
 
 	/**
-	 * Löscht ein bestehendes Module und trägt es aus dem Main Module aus
+	 * Delete a module and fire submodule delete
+	 * @return void
 	 */
 	public function deleteModule()
 	{
+		// Start Submodule
 		$this->removeSubmodule($this->name);
+
+		// Remove component folder
 		$this->app['files']->deleteDirectory($this->modPath);
 	}
 

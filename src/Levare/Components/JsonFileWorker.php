@@ -1,13 +1,30 @@
 <?php namespace Levare\Components;
 
+/**
+ * This Class worked with component.json Files
+ *
+ * @todo Write Documentation, write better method comments
+ *
+ * @package 
+ * @author Florian Uhlrich <f.uhlrich@levare-cms.de>
+ * @copyright Copyright (c) 2013 by Levare Project Team
+ * @version 1.0
+ * @access public
+ */
+
 use Illuminate\Foundation\Application;
 
 class JsonFileWorker {
 
+	/**
+	 * Contains app Ioc container
+	 * @var Illuminate\Foundation\Application
+	 */
 	private $app;
 
 	public function __construct(Application $app)
 	{
+		// Make IOC Container available on class
 		$this->app = $app;
 	}
 

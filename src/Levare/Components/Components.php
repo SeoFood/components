@@ -2,6 +2,8 @@
 
 /**
  * This class handle the component registration without ServiceProvider
+ *
+ * @todo Write Documentation, write better method comments
  * 
  * @package Levare\Components;
  * @author Florian Uhlrich <f.uhlrich@levare-cms.de>
@@ -51,18 +53,24 @@ class Components {
 	 */
 	public function __construct(Application $app)
 	{
+		// Make IOC Container available on class
 		$this->app = $app;
+
+		// Make Json Fileworker available on class
 		$this->jsonFileWorker = $app['components.jsonfileworker'];
 
+		// Check if component path exist
 		if(!$this->checkPath())
 		{
 			if(php_sapi_name() != 'cli')
 			{
+				// create component folder if not exists
 				$this->createFolder();
 			}
 			return false;
 		}
 
+		// Register all components
 		$this->registerComponents();
 	}
 
@@ -389,16 +397,42 @@ class Components {
 
 	}
 
+	/**
+	 * Register subcomponents in component array
+	 * @param  string $components
+	 * @param  string $mainCompName
+	 * @return void
+	 */
 	private function registerSubComponents($components, $mainCompName)
 	{
 		$this->registerComponents($components, $mainCompName);
 	}
 
 	/**
-	 * Get Component Status
+	 * Get component status
+	 * @param  string  $component
+	 * @return boolean
 	 */
 	public function isActive($component)
 	{
 		return (array_key_exists($component, $this->components)) ? $this->components[$component]['enabled'] : false;
+	}
+
+	/**
+	 * [call description]
+	 * @param  [type] $controller [description]
+	 * @param  string $action     [description]
+	 * @param  array  $attr       [description]
+	 * @return [type]             [description]
+	 */
+	public function call($controller, $action = 'index', $attr = array())
+	{
+		$array = array(
+			'controller' => $controller,
+			'action' => $action,
+			'attr' => $attr
+		);
+
+		return $this->app['components.hmvc']->get($array);
 	}
 }
