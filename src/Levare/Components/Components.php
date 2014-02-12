@@ -268,9 +268,6 @@ class Components {
 				require_once str_finish($component['path'], '/').$file;
 			}
 		}
-
-
-		
 	}
 
 	/**
@@ -427,6 +424,15 @@ class Components {
 	 */
 	public function call($controller, $action = 'index', $attr = array())
 	{
+		if(str_contains($controller, '::'))
+		{
+			$widget = explode('::', $controller);
+
+			$controllerCall = $this->jsonFileWorker->getSettingsFile($this->getPath($widget[0]), 'widgets');
+
+			$controller = array_get($controllerCall, $controller);
+		}
+
 		$array = array(
 			'controller' => $controller,
 			'action' => $action,
