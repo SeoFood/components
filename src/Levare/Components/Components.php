@@ -237,11 +237,11 @@ class Components {
 		{
 			if(array_key_exists(ucfirst($component), $this->components))
 			{
-				$path = $this->components[$component]['path'];
+				return $this->components[$component]['path'];
 			}
 		}
 
-		return $path;
+		return false;
 	}
 
 	/**
