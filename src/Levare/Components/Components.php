@@ -241,7 +241,7 @@ class Components {
 			}
 		}
 
-		return false;
+		return $this->path;
 	}
 
 	/**
