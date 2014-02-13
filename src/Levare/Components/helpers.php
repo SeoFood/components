@@ -45,3 +45,12 @@ function component_path()
 
     return str_finish($path, '/');
 }
+
+/**
+ * Check if is HMVC Request Helper
+ * @return boolean [description]
+ */
+function isHmvc()
+{
+    return App::make('components')->isHmvc();
+}

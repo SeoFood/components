@@ -233,13 +233,11 @@ class Components {
 	 */
 	public function getPath($component = false)
 	{
-		$path = str_finish($this->path, '/');
-
 		if($component)
 		{
 			if(array_key_exists(ucfirst($component), $this->components))
 			{
-				$path .= $component;
+				$path = $this->components[$component]['path'];
 			}
 		}
 
@@ -424,12 +422,11 @@ class Components {
 	 */
 	public function call($controller, $action = 'index', $attr = array())
 	{
+
 		if(str_contains($controller, '::'))
 		{
 			$widget = explode('::', $controller);
-
-			$controllerCall = $this->jsonFileWorker->getSettingsFile($this->getPath($widget[0]), 'widgets');
-
+			$controllerCall = $this->jsonFileWorker->getSettingsFile($this->getPath(mb_convert_case($widget[0], MB_CASE_TITLE, "UTF-8")), 'widgets');
 			$controller = array_get($controllerCall, $widget[1]);
 		}
 
@@ -440,5 +437,14 @@ class Components {
 		);
 
 		return $this->app['components.hmvc']->get($array);
+	}
+
+	/**
+	 * Check if is Hmvc Request
+	 * @return boolean [description]
+	 */
+	public function isHmvc()
+	{
+		return $this->app['components.hmvc']->active;
 	}
 }

@@ -42,6 +42,12 @@ class HmvcEngine implements EngineInterface {
 	private $action = 'index';
 
 	/**
+	 * [$active description]
+	 * @var boolean
+	 */
+	public $active = false;
+
+	/**
 	 * [__construct description]
 	 * @param Application $app [description]
 	 */
@@ -88,12 +94,11 @@ class HmvcEngine implements EngineInterface {
 	 */
 	protected function run()
 	{
-		$controller = new $this->controller();
+		$controller = $this->app->make($this->controller);
+
+		$this->active = true;
 
 		return call_user_func_array(array($controller, $this->action), $this->attr);
-		// return $controller->{$this->action}(
-		// 	$this->attr
-		// );
 	}
 
 	/**
