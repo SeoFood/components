@@ -17,8 +17,10 @@ return array(
 
 	/**
 	 * The component folder or Namespace name
+	 *
+	 * PSR-4 Name must endig with Trailing Slash
 	 */
-	'name' => 'Modules',
+	'name' => 'Modules\\',
 
 	/**
 	 * Here you can define files, that autoload in each Module

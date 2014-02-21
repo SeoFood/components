@@ -34,13 +34,20 @@ function component_path()
 {
     $path = str_finish(base_path(), '/');
 
-    if(!str_contains(Config::get('components::location'), './') && Config::get('components::location') === Config::get('components::name'))
+    if(Config::get('components::type') == 'namespace')
     {
         $path .= Config::get('components::location');
     }
     else
     {
-        $path .= str_finish(Config::get('components::location'), '/').Config::get('components::name');
+        if(str_contains(Config::get('components::location'), './'))
+        {
+            $path .= Config::get('components::name');
+        }
+        else
+        {
+            $path .= Config::get('components::location');
+        }
     }
 
     return str_finish($path, '/');

@@ -166,51 +166,19 @@ class Components {
 		// Check Path is writeable
 		$writeablePath = is_writable($path);		
 
-		// Get Composer File
-		$composer = json_decode($this->jsonFileWorker->getComposerFile(), true);
-
-		// Write to composer.json if key and value not exists
-		// dd(!in_array($location, array_get($composer, 'autoload.psr-0')));
-
-		$psr = ($type == 'namespace') ? 'psr-4' : 'psr-0';
-
-		if(!array_key_exists($name, array_get($composer, 'autoload.'.$psr, array())) || !in_array($location, array_get($composer, 'autoload.'.$psr)))
-		{
-
-			if($psr == 'psr-0')
-			{
-				$location = ($name == $location) ? './' : $location;
-			}
-
-			$newName = ($psr == 'psr-4') ? $name.'\\' : $name;
-
-			if(!array_get($composer, 'autoload.'.$psr.'.'.$newName, false))
-			{
-				array_set($composer, 'autoload.'.$psr, array_merge(array_get($composer, 'autoload.'.$psr, array()), array($newName => $location)));
-			}
-			else
-			{
-				array_set($composer, 'autoload.'.$psr.'.'.$newName, $location);
-			}
-
-			// Forget PSR-4 Components entry
-			$unsetPsr = ($psr == 'psr-4') ? 'psr-0' : 'psr-4';
-			$nameForget = ($unsetPsr == 'psr-4') ? $name.'\\' : $name;
-
-			array_forget($composer, 'autoload.'.$unsetPsr.'.'.$nameForget);
-
-			if(array_key_exists($unsetPsr, array_get($composer, 'autoload', array())) && !array_get($composer, 'autoload.'.$unsetPsr, false))
-			{
-				array_forget($composer, 'autoload.'.$unsetPsr);
-			}
-
-			// Write new composer.json
-			if($writeablePath)
-			{
-				$this->jsonFileWorker->setComposerFile($composer);
-			}
-		}
+		// Dynamic Composer Autoload
+		$loader = require base_path() . '/vendor/autoload.php';
 		
+
+		if($config->get('components::type') == 'namespace')
+		{
+			$loader->addPsr4($name, $path);
+		}
+		else
+		{
+			$loader->add($name, $path);
+		}
+
 		// Setup Path
 		$this->path = $path;
 
