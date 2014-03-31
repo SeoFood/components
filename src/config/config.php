@@ -48,8 +48,6 @@ return array(
 	 * route.php must not defined
 	 */
 	'artisan_create_files' => array(
-		'Models'.DIRECTORY_SEPARATOR.'Eloquent'.DIRECTORY_SEPARATOR.'User.php',
-		'filters.php',
-		'test.php'
+		'filters.php'
 	),
 );
