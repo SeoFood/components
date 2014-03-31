@@ -145,6 +145,13 @@ class CreateComponentCommand extends Command {
 			}
 		}
 
+		foreach((array) $this->worker->errors as $error)
+		{
+			$this->error(sprintf("Can't create: %s", $error));
+			$this->error('Folder does not exists');
+		}
+
+
 		$this->info('Your Component was successfully created. Thank you for using the Components Package.');
 	}
 

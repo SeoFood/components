@@ -18,6 +18,12 @@ use Illuminate\Foundation\Application;
 class Worker {
 
 	/**
+	 * Contains Creation Errors
+	 * @var array
+	 */
+	public $errors = array();
+
+	/**
 	 * Contains app Ioc container
 	 * @var Illuminate\Foundation\Application
 	 */
@@ -96,6 +102,7 @@ class Worker {
 	{
 		$this->createFolder();
 		$this->createFolders();
+		$this->createDefinedFiles();
 		$this->createRoutesFile();
 		$this->createSettingsFile();
 	}
@@ -154,6 +161,31 @@ class Worker {
 	public function createRoutesFile()
 	{
 		$this->app['files']->put($this->modPath.'routes.php', '<?php //');
+	}
+
+	/**
+	 * Creates all defined Files
+	 * @return void
+	 */
+	public function createDefinedFiles()
+	{
+		$error = array();
+		foreach($this->app['config']->get('components::artisan_create_files') as $file)
+		{
+			$pathNew = explode(DIRECTORY_SEPARATOR, $file);
+			$count = count($pathNew);
+			unset($pathNew[$count-1]);
+			$path = implode(DIRECTORY_SEPARATOR, $pathNew);
+
+			if($this->app['files']->isWritable($this->modPath.$path))
+			{
+				$this->app['files']->put($this->modPath.$file, '');
+			}
+			else
+			{
+				$this->errors = $this->modPath.$file;
+			}
+		}
 	}
 
 	/**

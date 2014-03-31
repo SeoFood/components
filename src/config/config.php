@@ -31,13 +31,25 @@ return array(
 	),
 
 	/**
-	 * File would be created with artisan command
+	 * Folder would be created with artisan command
 	 */
 	'artisan_create_folders' => array(
 		'Controllers', // ucfirst for namespace on osx, linux and windows
 		'Models', // ucfirst for namespace on osx, linux and windows
+		'Models'.DIRECTORY_SEPARATOR.'Eloquent',
 		'views',
 		'lang',
 		'config'
-	)
+	),
+
+	/**
+	 * Files would be created with artisan command
+	 * This Files are automatic created without asking
+	 * route.php must not defined
+	 */
+	'artisan_create_files' => array(
+		'Models'.DIRECTORY_SEPARATOR.'Eloquent'.DIRECTORY_SEPARATOR.'User.php',
+		'filters.php',
+		'test.php'
+	),
 );

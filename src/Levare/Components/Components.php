@@ -396,6 +396,14 @@ class Components {
 			$widget = explode('::', $controller);
 			$controllerCall = $this->jsonFileWorker->getSettingsFile($this->getPath(mb_convert_case($widget[0], MB_CASE_TITLE, "UTF-8")), 'widgets');
 			$controller = array_get($controllerCall, $widget[1]);
+
+			/**
+			 * Check if Controller Method exists
+			 */
+			if(str_contains($controller, '@'))
+			{
+				list($controller, $action) = explode('@', $controller);
+			}
 		}
 
 		$array = array(
